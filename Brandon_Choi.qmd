@@ -192,16 +192,16 @@ theta.numericalp3_q1 <- (p3_q1.downT - p3_q1.currentT)
 
 greeks_table <- dplyr::tribble(
   ~Greeks, ~P1, ~P2, ~P3,
-  "Delta", delta.numericalp2_q1, delta.numericalp2_q1, delta.numericalp3_q1,
-  "Gamma", gamma.numericalp2_q1, gamma.numericalp2_q1, gamma.numericalp3_q1,
-  "Vega", vega.numericalp2_q1, vega.numericalp2_q1, vega.numericalp3_q1,
-  "Theta", theta.numericalp2_q1, theta.numericalp2_q1, theta.numericalp3_q1
+  "Delta", delta.numericalp1_q1, delta.numericalp2_q1, delta.numericalp3_q1,
+  "Gamma", gamma.numericalp1_q1, gamma.numericalp2_q1, gamma.numericalp3_q1,
+  "Vega", vega.numericalp1_q1, vega.numericalp2_q1, vega.numericalp3_q1,
+  "Theta", theta.numericalp1_q1, theta.numericalp2_q1, theta.numericalp3_q1
 ) %>% 
   gt::gt() %>% 
   gt::tab_header(
     title    = "Greeks",
     subtitle = "") %>% 
-    gt::fmt_number(columns = c(Greeks, P1, P2, P3), decimals = 2)
+    gt::fmt_number(columns = c(P1, P2, P3), decimals = 2)
 ```
 
 # Step Size Selection
@@ -247,7 +247,7 @@ dollar_greeks_table <- dplyr::tribble(
   gt::tab_header(
     title    = "Dollar Scaled Greeks",
     subtitle = "$ Pnl / $1/bbl movement") %>% 
-    gt::fmt_number(columns = c(Greeks, P1, P2, P3), decimals = 2)
+    gt::fmt_number(columns = c(P1, P2, P3), decimals = 2)
 ```
 
 ```{r q1}
@@ -460,13 +460,13 @@ Sum Greeks across positions to show **portfolio-level Greeks** at the current ma
 ```{r q2}
 portfolio_greeks_table <- dplyr::tibble(
   Greeks = c("Delta", "Gamma", "Vega", "Theta"),
-  Portfolio =c(dollar_delta_total_q1, dollar_gamma_total_q1, dollar_gamma_total_q1, dollar_vega_total_q1)
+  Portfolio =c(dollar_delta_total_q1, dollar_gamma_total_q1, dollar_vega_total_q1, dollar_theta_total_q1)
 ) %>% 
   gt::gt() %>% 
   gt::tab_header(
     title    = "Portfolio Level Greeks",
     subtitle = "Dollar Scaled") %>% 
-    gt::fmt_number(columns = c("Greeks", "Portfolio"), decimals = 2)
+    gt::fmt_number(columns = c("Portfolio"), decimals = 2)
 
 delta_data <- delta_data_p1 %>%
   left_join(delta_data_p2, by = "Price") %>%
