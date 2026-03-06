@@ -451,6 +451,7 @@ mtm_plot
 portfolio_gamma_plot
 ```
 
+For the analysis of Gamma for our portfolio, the highest dollar scaled region is ~ 68 Dollars and the lowest dollar scaled region is ~ 78 Dollars. This is because of our long put position near the $70 mark, and our short call position near the 80 Dollar mark. With our additional short put position at 55 Dollars, these peaks are shifted slightly to the left. Gamma is closest to zero near 100 Dollars as that would be the furthest distance away from these options positions.
 
 
 # Question 2 (3 points)
