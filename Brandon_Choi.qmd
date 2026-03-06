@@ -100,6 +100,7 @@ Create plots showing each Greek vs. futures price over F ∈ [50, 100], with one
 - What the changing Gamma means for a delta-hedger rebalancing daily as WTI moves through the $50–$100 range.
 
 ```{r q1}
+# Greeks
 S = F_0
 r = r
 N_q1 = 1000 # Placeholder
@@ -189,52 +190,33 @@ p3_q1.currentT <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, s
 
 theta.numericalp3_q1 <- (p3_q1.downT - p3_q1.currentT)
 
+
+
+
+
 ### Dollar Scaling
+dollar_deltap1_q1 <- delta.numericalp1_q1 * 2000 * mult
+dollar_gammap1_q1 <- gamma.numericalp1_q1 * 2000 * mult
+dollar_vegap1_q1 <- vega.numericalp1_q1 * 2000 * mult
+dollar_thetap1_q1 <- theta.numericalp1_q1 * 2000 * mult
 
-payoffs <- dplyr::tibble(Price = seq(50,150,1), PayoffatMaturity = 0)
-strike = 100
-callpayoff <- function(price,strike) {max(price - strike,0)}
-putpayoff <- function(price,strike) {max(strike - price,0)}
-calculate_gbs <- function(S, X, T2M, r, b, sigma, type, output = "price") {
-  if (output == "price") {
-    out <- RTL::GBSOption(S, X, T2M, r, b, sigma, type)$price
-  } else if (output == "delta") {
-    out <- RTL::GBSOption(S, X, T2M, r, b, sigma, type)$delta
-  } else if (output == "gamma"){
-    out <- RTL::GBSOption(S, X, T2M, r, b, sigma, type)$gamma
-  } else if (output == "vega") {
-    out <- RTL::GBSOption(S, X, T2M, r, b, sigma, type)$vega
-  } else if (output == "theta") {
-    out <- RTL::GBSOption(S, X, T2M, r, b, sigma, type)$theta
-  } else if (output == "rho") {
-    out <- RTL::GBSOption(S, X, T2M, r, b, sigma, type)$rho
-  } 
-  return(out)
-}
-t1 = 1/52
+dollar_deltap2_q1 <- delta.numericalp2_q1 * -2000 * mult
+dollar_gammap2_q1 <- gamma.numericalp2_q1 * -2000 * mult
+dollar_vegap2_q1 <- vega.numericalp2_q1 * -2000 * mult
+dollar_thetap2_q1 <- theta.numericalp2_q1 * -2000 * mult
 
-payoffs <- payoffs %>% 
-  dplyr::mutate(PayoffatMaturity = (mapply(callpayoff,Price,strike = 100) 
-                                    - mapply(callpayoff,Price,strike = 110) 
-                                    - mapply(callpayoff,Price,strike = 120)
-                                    + mapply(putpayoff,Price,strike = 100)
-                                    - mapply(putpayoff,Price,strike = 90)
-                                    - mapply(putpayoff,Price,strike = 80)),
-                C100 = purrr::pmap_dbl(.l = list(S = Price, X = 100, T2M = t1, r, b = r-d, sigma, type = "call"), 
-                                                .f = calculate_gbs),
-                C110 = purrr::pmap_dbl(.l = list(S = Price, X = 110, T2M = t1, r, b = r-d, sigma, type = "call"), 
-                                                .f = calculate_gbs),
-                C120 = purrr::pmap_dbl(.l = list(S = Price, X = 120, T2M = t1, r, b = r-d, sigma, type = "call"), 
-                                                .f = calculate_gbs),
-                P100 = purrr::pmap_dbl(.l = list(S = Price, X = 100, T2M = t1, r, b = r-d, sigma, type = "put"), 
-                                                .f = calculate_gbs),
-                P90 = purrr::pmap_dbl(.l = list(S = Price, X = 90, T2M = t1, r, b = r-d, sigma, type = "put"), 
-                                                .f = calculate_gbs),
-                P80 = purrr::pmap_dbl(.l = list(S = Price, X = 80, T2M = t1, r, b = r-d, sigma, type = "put"), 
-                                                .f = calculate_gbs)) %>%
-  dplyr::mutate(Price = Price, 
-                PayoffatMaturity = PayoffatMaturity,
-                Port = C100 - C110 - C120 + P100 - P90 - P80)
+dollar_deltap3_q1 <- delta.numericalp3_q1 * -2000 * mult
+dollar_gammap3_q1 <- gamma.numericalp3_q1 * -2000 * mult
+dollar_vegap3_q1 <- vega.numericalp3_q1 * -2000 * mult
+dollar_thetap3_q1 <- theta.numericalp3_q1 * -2000 * mult
+
+
+
+
+
+
+
+
 
 
 ```
