@@ -104,6 +104,10 @@ S = F_0
 r = r
 N_q1 = 1000 # Placeholder
 
+step.size_q1_DG = 1 # Placeholder
+step.size_q1_V = 0.01 # Placeholder
+step.size_q1_T = 1 / 365 # Placeholder
+
 # Position P1
 xp1_q1 = 70.00
 t2mp1_q1 = 1 / 4
@@ -111,32 +115,79 @@ bp1_q1 = 0
 sigmap1_q1 = 0.35
 
 # Position P1 Delta / Gamma
-step.size_q1_DG = 1 # Placeholder
-
 p1_q1.downDG <- RTL::CRROption(S - step.size_q1_DG, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
 p1_q1.currentDG <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
 p1_q1.upDG <-RTL::CRROption(S + step.size_q1_DG, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
 
-delta.numerical <- (p1_q1.upDG - p1_q1.downDG) / (2 * step.size_q1_DG)
-gamma.numerical <- (p1_q1.upDG - 2 * p1_q1.currentDG +  p1_q1.downDG) / (2 * step.size_q1_DG ^ 2)
+delta.numericalp1_q1 <- (p1_q1.upDG - p1_q1.downDG) / (2 * step.size_q1_DG)
+gamma.numericalp1_q1 <- (p1_q1.upDG - 2 * p1_q1.currentDG +  p1_q1.downDG) / (2 * step.size_q1_DG ^ 2)
 
 # Position P1 Vega
-step.size_q1_V = 0.01 # Placeholder
-
 p1_q1.downV <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1 - step.size_q1_V, N = N_q1, type = "put", optionStyle = "american")$price
 p1_q1.currentV <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
 p1_q1.upV <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1 + step.size_q1_V, N = N_q1, type = "put", optionStyle = "american")$price
 
-vega.numerical <- (p1_q1.upV - p1_q1.downV) / (2 * step.size_q1_V * 100)
+vega.numericalp1_q1 <- (p1_q1.upV - p1_q1.downV) / (2 * step.size_q1_V * 100)
 
 # Position P1 Theta
-step.size_q1_T = 1 / 365 # Placeholder
-
 p1_q1.downT <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1 - step.size_q1_T, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
 p1_q1.currentT <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
 
-theta.numerical <- (p1_q1.downT - p1_q1.currentT)
+theta.numericalp1_q1 <- (p1_q1.downT - p1_q1.currentT)
 
+# Position P2
+xp2_q1 = 55.00
+t2mp2_q1 = 1 / 4
+bp2_q1 = 0
+sigmap2_q1 = 0.42
+
+# Position P2 Delta / Gamma
+p2_q1.downDG <- RTL::CRROption(S - step.size_q1_DG, X = xp2_q1, T2M = t2mp2_q1, r, b = bp2_q1, sigma = sigmap2_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p2_q1.currentDG <- RTL::CRROption(S, X = xp2_q1, T2M = t2mp2_q1, r, b = bp2_q1, sigma = sigmap2_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p2_q1.upDG <-RTL::CRROption(S + step.size_q1_DG, X = xp2_q1, T2M = t2mp2_q1, r, b = bp2_q1, sigma = sigmap2_q1, N = N_q1, type = "put", optionStyle = "american")$price
+
+delta.numerical <- (p2_q1.upDG - p2_q1.downDG) / (2 * step.size_q1_DG)
+gamma.numerical <- (p2_q1.upDG - 2 * p2_q1.currentDG +  p2_q1.downDG) / (2 * step.size_q1_DG ^ 2)
+
+# Position P2 Vega
+p2_q1.downV <- RTL::CRROption(S, X = xp2_q1, T2M = t2mp2_q1, r, b = bp2_q1, sigma = sigmap2_q1 - step.size_q1_V, N = N_q1, type = "put", optionStyle = "american")$price
+p2_q1.currentV <- RTL::CRROption(S, X = xp2_q1, T2M = t2mp2_q1, r, b = bp2_q1, sigma = sigmap2_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p2_q1.upV <- RTL::CRROption(S, X = xp2_q1, T2M = t2mp2_q1, r, b = bp2_q1, sigma = sigmap2_q1 + step.size_q1_V, N = N_q1, type = "put", optionStyle = "american")$price
+
+vega.numerical <- (p2_q1.upV - p2_q1.downV) / (2 * step.size_q1_V * 100)
+
+# Position P2 Theta
+p2_q1.downT <- RTL::CRROption(S, X = xp2_q1, T2M = t2mp2_q1 - step.size_q1_T, r, b = bp2_q1, sigma = sigmap2_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p2_q1.currentT <- RTL::CRROption(S, X = xp2_q1, T2M = t2mp2_q1, r, b = bp2_q1, sigma = sigmap2_q1, N = N_q1, type = "put", optionStyle = "american")$price
+
+theta.numerical <- (p2_q1.downT - p2_q1.currentT)
+
+# Position P3
+xp3_q1 = 80.00
+t2mp3_q1 = 1 / 4
+bp3_q1 = 0
+sigmap3_q1 = 0.3
+
+# Position P3 Delta / Gamma
+p3_q1.downDG <- RTL::CRROption(S - step.size_q1_DG, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = sigmap3_q1, N = N_q1, type = "cal", optionStyle = "american")$price
+p3_q1.currentDG <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = sigmap3_q1, N = N_q1, type = "cal", optionStyle = "american")$price
+p3_q1.upDG <-RTL::CRROption(S + step.size_q1_DG, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = sigmap3_q1, N = N_q1, type = "cal", optionStyle = "american")$price
+
+delta.numerical <- (p3_q1.upDG - p3_q1.downDG) / (2 * step.size_q1_DG)
+gamma.numerical <- (p3_q1.upDG - 2 * p3_q1.currentDG +  p3_q1.downDG) / (2 * step.size_q1_DG ^ 2)
+
+# Position P3 Vega
+p3_q1.downV <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = sigmap3_q1 - step.size_q1_V, N = N_q1, type = "cal", optionStyle = "american")$price
+p3_q1.currentV <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = sigmap3_q1, N = N_q1, type = "cal", optionStyle = "american")$price
+p3_q1.upV <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = sigmap3_q1 + step.size_q1_V, N = N_q1, type = "cal", optionStyle = "american")$price
+
+vega.numerical <- (p3_q1.upV - p3_q1.downV) / (2 * step.size_q1_V * 100)
+
+# Position P3 Theta
+p3_q1.downT <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1 - step.size_q1_T, r, b = bp3_q1, sigma = sigmap3_q1, N = N_q1, type = "cal", optionStyle = "american")$price
+p3_q1.currentT <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = sigmap3_q1, N = N_q1, type = "cal", optionStyle = "american")$price
+
+theta.numerical <- (p3_q1.downT - p3_q1.currentT)
 
 ```
 
