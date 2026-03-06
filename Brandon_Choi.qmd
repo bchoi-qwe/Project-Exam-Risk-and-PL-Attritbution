@@ -100,13 +100,23 @@ Create plots showing each Greek vs. futures price over F ∈ [50, 100], with one
 - What the changing Gamma means for a delta-hedger rebalancing daily as WTI moves through the $50–$100 range.
 
 ```{r q1}
-# Position P1
-step.size = 1
-p.down <- RTL::GBSOption(S - step.size, X , T2M, r , b = r - d, sigma = sigma, type = "call")$price
-p.current <- RTL::GBSOption(S, X , T2M, r , b = r - d, sigma = sigma, type = "call")$price
-p.up <-RTL::GBSOption(S + step.size, X , T2M, r , b = r - d, sigma = sigma, type = "call")$price
+S = F_0
+r = r
+step.size_q1 = 1 # Placeholder
+N_q1 = 1000 # Placeholder
 
-delta.numerical <- (p.up - p.down) / 2 * step.size
+# Position P1
+xp1_q1 = 70.00
+t2mp1_q1 = 0.25
+bp1_q1 = 0
+sigmap1_q1 = 0.35
+
+# Position P1 Steps
+p1_q1.down <- RTL::CRROption(S - step.size_q1, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p1_q1.current <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p1_q1.up <-RTL::CRROption(S + step.size_q1, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+
+delta.numerical <- (p1_q1.up - p1_q1.down) / 2 * step.size_q1
 delta.numerical
 
 
