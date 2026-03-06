@@ -101,19 +101,19 @@ Create plots showing each Greek vs. futures price over F ∈ [50, 100], with one
 
 ```{r q1}
 # Greeks
-S = F_0
-r = r
-N_q1 = 1000
+S <- F_0
+r <- r
+N_q1 <- 1000
 
-step.size_q1_DG = 0.50
-step.size_q1_V = 0.01
-step.size_q1_T = 1 / 365
+step.size_q1_DG <- 0.50
+step.size_q1_V <- 0.01
+step.size_q1_T <- 1 / 365
 
 # Position P1
-xp1_q1 = 70.00
-t2mp1_q1 = 1 / 4
-bp1_q1 = 0
-sigmap1_q1 = 0.35
+xp1_q1 <- 70.00
+t2mp1_q1 <- 1 / 4
+bp1_q1 <- 0
+sigmap1_q1 <- 0.35
 
 # Position P1 Delta / Gamma
 p1_q1.downDG <- RTL::CRROption(S - step.size_q1_DG, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
@@ -137,10 +137,10 @@ p1_q1.currentT <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, s
 theta.numericalp1_q1 <- (p1_q1.downT - p1_q1.currentT)
 
 # Position P2
-xp2_q1 = 55.00
-t2mp2_q1 = 1 / 4
-bp2_q1 = 0
-sigmap2_q1 = 0.42
+xp2_q1 <- 55.00
+t2mp2_q1 <- 1 / 4
+bp2_q1 <- 0
+sigmap2_q1 <- 0.42
 
 # Position P2 Delta / Gamma
 p2_q1.downDG <- RTL::CRROption(S - step.size_q1_DG, X = xp2_q1, T2M = t2mp2_q1, r, b = bp2_q1, sigma = sigmap2_q1, N = N_q1, type = "put", optionStyle = "american")$price
@@ -164,10 +164,10 @@ p2_q1.currentT <- RTL::CRROption(S, X = xp2_q1, T2M = t2mp2_q1, r, b = bp2_q1, s
 theta.numericalp2_q1 <- (p2_q1.downT - p2_q1.currentT)
 
 # Position P3
-xp3_q1 = 80.00
-t2mp3_q1 = 1 / 4
-bp3_q1 = 0
-sigmap3_q1 = 0.3
+xp3_q1 <- 80.00
+t2mp3_q1 <- 1 / 4
+bp3_q1 <- 0
+sigmap3_q1 <- 0.3
 
 # Position P3 Delta / Gamma
 p3_q1.downDG <- RTL::CRROption(S - step.size_q1_DG, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = sigmap3_q1, N = N_q1, type = "call", optionStyle = "american")$price
@@ -216,20 +216,20 @@ For Theta, I choose a step size of 1 / 365. This is because the Maturity was giv
 
 ```{r q1}
 ### Dollar Scaling
-dollar_deltap1_q1 <- delta.numericalp1_q1 * 2000 * mult
-dollar_gammap1_q1 <- gamma.numericalp1_q1 * 2000 * mult
-dollar_vegap1_q1 <- vega.numericalp1_q1 * 2000 * mult
-dollar_thetap1_q1 <- theta.numericalp1_q1 * 2000 * mult
+dollar_deltap1_q1 <- delta.numericalp1_q1 * (2000 * mult)
+dollar_gammap1_q1 <- gamma.numericalp1_q1 * (2000 * mult)
+dollar_vegap1_q1 <- vega.numericalp1_q1 * (2000 * mult)
+dollar_thetap1_q1 <- theta.numericalp1_q1 * (2000 * mult)
 
-dollar_deltap2_q1 <- delta.numericalp2_q1 * -2000 * mult
-dollar_gammap2_q1 <- gamma.numericalp2_q1 * -2000 * mult
-dollar_vegap2_q1 <- vega.numericalp2_q1 * -2000 * mult
-dollar_thetap2_q1 <- theta.numericalp2_q1 * -2000 * mult
+dollar_deltap2_q1 <- delta.numericalp2_q1 * (-2000 * mult)
+dollar_gammap2_q1 <- gamma.numericalp2_q1 * (-2000 * mult)
+dollar_vegap2_q1 <- vega.numericalp2_q1 * (-2000 * mult)
+dollar_thetap2_q1 <- theta.numericalp2_q1 * (-2000 * mult)
 
-dollar_deltap3_q1 <- delta.numericalp3_q1 * -2000 * mult
-dollar_gammap3_q1 <- gamma.numericalp3_q1 * -2000 * mult
-dollar_vegap3_q1 <- vega.numericalp3_q1 * -2000 * mult
-dollar_thetap3_q1 <- theta.numericalp3_q1 * -2000 * mult
+dollar_deltap3_q1 <- delta.numericalp3_q1 * (-2000 * mult)
+dollar_gammap3_q1 <- gamma.numericalp3_q1 * (-2000 * mult)
+dollar_vegap3_q1 <- vega.numericalp3_q1 * (-2000 * mult)
+dollar_thetap3_q1 <- theta.numericalp3_q1 * (-2000 * mult)
 
 dollar_delta_total_q1 <- dollar_deltap1_q1 + dollar_deltap2_q1 + dollar_deltap3_q1
 dollar_gamma_total_q1 <- dollar_gammap1_q1 + dollar_gammap2_q1 + dollar_gammap3_q1
@@ -460,7 +460,7 @@ Sum Greeks across positions to show **portfolio-level Greeks** at the current ma
 ```{r q2}
 portfolio_greeks_table <- dplyr::tibble(
   Greeks = c("Delta", "Gamma", "Vega", "Theta"),
-  Portfolio =c(dollar_delta_total_q1, dollar_gamma_total_q1, dollar_vega_total_q1, dollar_theta_total_q1)
+  Portfolio = c(dollar_delta_total_q1, dollar_gamma_total_q1, dollar_vega_total_q1, dollar_theta_total_q1)
 ) %>% 
   gt::gt() %>% 
   gt::tab_header(
@@ -512,6 +512,14 @@ with h = `step_S` and k = `step_v`. The Vanna P&L contribution is Vanna × ΔF �
 Present all results in a `gt::gt()` table. Which position dominates the loss? Is the Greek attribution a reliable approximation here, and why or why not?
 
 ```{r q3}
+S_q3 <- 90
+r <- r
+N_q3 <- 1000
+
+step.size_q1_DG <- 0.50
+step.size_q1_V <- 0.01
+step.size_q1_T <- 1 / 365
+
 
 ```
 
