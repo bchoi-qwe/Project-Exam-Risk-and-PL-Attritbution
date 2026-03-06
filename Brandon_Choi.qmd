@@ -100,6 +100,15 @@ Create plots showing each Greek vs. futures price over F ∈ [50, 100], with one
 - What the changing Gamma means for a delta-hedger rebalancing daily as WTI moves through the $50–$100 range.
 
 ```{r q1}
+# Position P1
+step.size = 1
+p.down <- RTL::GBSOption(S - step.size, X , T2M, r , b = r - d, sigma = sigma, type = "call")$price
+p.current <- RTL::GBSOption(S, X , T2M, r , b = r - d, sigma = sigma, type = "call")$price
+p.up <-RTL::GBSOption(S + step.size, X , T2M, r , b = r - d, sigma = sigma, type = "call")$price
+
+delta.numerical <- (p.up - p.down) / 2 * step.size
+delta.numerical
+
 
 ```
 
