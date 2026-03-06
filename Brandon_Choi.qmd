@@ -99,7 +99,7 @@ Create plots showing each Greek vs. futures price over F ∈ [50, 100], with one
 - Where portfolio Gamma is highest and lowest across the price range, and why those regions correspond to specific positions.
 - What the changing Gamma means for a delta-hedger rebalancing daily as WTI moves through the $50–$100 range.
 
-```{r q1}
+```{r q1-1}
 # Greeks
 S <- F_0
 r <- r
@@ -214,7 +214,7 @@ For Vega, I chose 0.01 as the step size as that would be the smallest measure of
 For Theta, I choose a step size of 1 / 365. This is because the Maturity was given as 3M, and I believed that value would already have been annualized. Since shorter step sizes can more accurately model lower T2M's, this works well for our contracts.
 
 
-```{r q1}
+```{r q1-2}
 ### Dollar Scaling
 dollar_deltap1_q1 <- delta.numericalp1_q1 * (2000 * mult)
 dollar_gammap1_q1 <- gamma.numericalp1_q1 * (2000 * mult)
@@ -250,7 +250,7 @@ dollar_greeks_table <- dplyr::tribble(
     gt::fmt_number(columns = c(P1, P2, P3), decimals = 2)
 ```
 
-```{r q1}
+```{r q1-3}
 f_range_q1 <- seq(50, 100, 0.5)
 
 ### Delta Data
@@ -414,7 +414,7 @@ theta_plot
 ```
 
 
-```{r q1}
+```{r q1-4}
 # Question 4
 price_CRROption <- function (S, X, T2M, r, b, sigma, type, N, optionStyle) {
   CRROption(S, X, T2M, r, b, sigma, N = N_q1, type, optionStyle = "american")$price
@@ -475,17 +475,6 @@ delta_data <- delta_data_p1 %>%
 
 delta_positive <- delta_data %>% 
   filter(Portfolio > 0)
-  
-
-
-
-
-
-
-
-
-
-
 ```
 
 # Question 3 (8 points)
@@ -516,11 +505,28 @@ S_q3 <- 90
 r <- r
 N_q3 <- 1000
 
-step.size_q1_DG <- 0.50
-step.size_q1_V <- 0.01
-step.size_q1_T <- 1 / 365
+step.size_q3_DG <- 0.50
+step.size_q3_V <- 0.01
+step.size_q3_T <- 1 / 365
 
+sigma_p1_q3 <- 0.55
+sigma_p2_q3 <- 0.62
+sigma_p3_q3 <- 0.62
+t2m_q3 <- (1 / 4) - (1 / 365)
 
+old_p1 <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = 0, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+old_p2 <- RTL::CRROption(S, X = xp2_q1, T2M = t2mp2_q1, r, b = 0, sigma = sigmap2_q1, N = N_q1, type = "put", optionStyle = "american")$price
+old_p3 <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = 0, sigma = sigmap3_q1, N = N_q1, type = "call", optionStyle = "american")$price
+
+shock_p1 <- RTL::CRROption(S_q3 - step.size_q1_DG, X = xp1_q1, T2M = t2m_q3, r, b = bp1_q1, sigma = sigma_p1_q3, N = N_q1, type = "put", optionStyle = "american")$price
+shock_p2 <- RTL::CRROption(S_q3 - step.size_q1_DG, X = xp1_q1, T2M = t2m_q3, r, b = bp1_q1, sigma = sigma_p2_q3, N = N_q1, type = "put", optionStyle = "american")$price
+shock_p3 <- RTL::CRROption(S_q3 - step.size_q1_DG, X = xp1_q1, T2M = t2m_q3, r, b = bp1_q1, sigma = sigma_p3_q3, N = N_q1, type = "call", optionStyle = "american")$price
+
+pnl_p1 <- (shock_p1 - old_p1) * 2000 * mult
+pnl_p2 <- (shock_p2 - old_p2) * -2000 * mult
+pnl_p3 <- (shock_p3 - old_p3) * -2000 * mult
+
+actual_pnl <- pnl_p1 + pnl_p2 + pnl_p3
 ```
 
 # Question 4 (4 points)
@@ -534,7 +540,6 @@ Holding vol and time constant at their initial values, compute Actual P&L (full 
 **b.** At what ΔF does the absolute residual first exceed 5% of the absolute Actual P&L? Report in a `gt::gt()` table. What does this tell you about using Greeks for risk management in extreme scenarios?
 
 ```{r q4}
-
 ```
 
 # Question 5 (6 points)
@@ -550,3 +555,5 @@ Discuss the key learnings and insights from a Greek risk management perspective.
 Pay particular attention to why textbook delta-hedging assumptions break down in geopolitical gap scenarios, and what risk tools a real energy desk would use instead.
 
 *Your answer here.*
+
+For the desk, this means delta-hedging costs and frequency are highest when WTI trades between 70 - 80 dollars near the strikes. Positive Gamma regions (below ~75 Dollars) are driven primarily by P1, the long $70 put.
