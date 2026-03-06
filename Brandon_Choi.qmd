@@ -190,10 +190,32 @@ p3_q1.currentT <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, s
 
 theta.numericalp3_q1 <- (p3_q1.downT - p3_q1.currentT)
 
+greeks_table <- dplyr::tribble(
+  ~Position, ~P1, ~P2, ~P3,
+  "Delta", delta.numericalp2_q1, delta.numericalp2_q1, delta.numericalp3_q1,
+  "Gamma", gamma.numericalp2_q1, gamma.numericalp2_q1, gamma.numericalp3_q1,
+  "Vega", vega.numericalp2_q1, vega.numericalp2_q1, vega.numericalp3_q1,
+  "Theta", theta.numericalp2_q1, theta.numericalp2_q1, theta.numericalp3_q1
+) %>% 
+  gt::gt() %>% 
+  gt::tab_header(
+    title    = "Greeks",
+    subtitle = "",
+    gt::fmt_number(columns = c(P1, P2, P3), decimals = 2)
+  )
+```
+
+# Step Size Selection
+For Delta, I chose 0.25 as the step size. While the minimum price fluctuation / barrel was listed at 0.01 on the CME, I believed that this would be too small of a step size. While the WTI contract on the CME (open - close) / 2 of ~ $0.75, I believed that with the shorter expiry, a smaller denomination would work best.
+
+For Gamma, I also chose 0.25 as the step rate for the same reasons. Both of these greeks are related to the price of the contract. Since shorter step sizes can more accurately model lower T2M's, this works well for our contracts.
+
+For Vega, I chose 0.01 as the step size as that would be the smallest measure of change in implied volatility.
+
+For Theta, I choose a step size of 1 / 365. This is because the Maturity was given as 3M, and I believed that value would already have been annualized. Since shorter step sizes can more accurately model lower T2M's, this works well for our contracts.
 
 
-
-
+```{r q1}
 ### Dollar Scaling
 dollar_deltap1_q1 <- delta.numericalp1_q1 * 2000 * mult
 dollar_gammap1_q1 <- gamma.numericalp1_q1 * 2000 * mult
@@ -214,9 +236,21 @@ dollar_delta_total_q1 <- dollar_deltap1_q1 + dollar_deltap2_q1 + dollar_deltap3_
 dollar_gamma_total_q1 <- dollar_gammap1_q1 + dollar_gammap2_q1 + dollar_gammap3_q1
 dollar_vega_total_q1 <- dollar_vegap1_q1 + dollar_vegap2_q1 + dollar_vegap3_q1
 dollar_theta_total_q1 <- dollar_thetap1_q1 + dollar_thetap2_q1 + dollar_thetap3_q1
+
+dollar_greeks_table <- dplyr::tribble(
+  ~Position, ~P1, ~P2, ~P3,
+  "Delta", dollar_deltap1_q1, dollar_deltap2_q1, dollar_deltap3_q1,
+  "Gamma", dollar_gammap1_q1, dollar_gammap2_q1, dollar_gammap3_q1,
+  "Vega", dollar_vegap1_q1, dollar_vegap2_q1, dollar_vegap3_q1,
+  "Theta", dollar_thetap1_q1, dollar_thetap2_q1, dollar_thetap3_q1
+) %>% 
+  gt::gt() %>% 
+  gt::tab_header(
+    title    = "Dollar Scaled Greeks",
+    subtitle = "$ Pnl / $1/bbl movement",
+    gt::fmt_number(columns = c(P1, P2, P3), decimals = 2)
+  )
 ```
-
-
 
 ```{r q1}
 f_range_q1 <- seq(50, 100, 0.25)
@@ -374,7 +408,13 @@ theta_plot <- theta_data_p1 %>%
   ggplot(aes(x = Price, y = Dollar_Theta, color = Position)) +
   geom_line() +
   theme_minimal()
+
+delta_plot
+gamma_plot
+vega_plot
+theta_plot
 ```
+
 
 ```{r q1}
 # Question 4
@@ -406,7 +446,12 @@ portfolio_gamma_plot <- gamma_data %>%
   geom_line() +
   labs(x = "Futures Price ($/bbl)", y = "Portfolio Dollar Gamma ($)", title = "Portfolio Gamma") +
   theme_minimal()
+
+mtm_plot
+portfolio_gamma_plot
 ```
+
+
 
 # Question 2 (3 points)
 
