@@ -249,7 +249,7 @@ up <-RTL::CRROption(S + step.size_q1_DG, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_
 }) * -2000 * mult
 )
 
-delta_data <- delta_data_p1 %>%
+delta_plot <- delta_data_p1 %>%
   left_join(delta_data_p2, by = "Price") %>%
   left_join(delta_data_p3, by = "Price") %>%
   pivot_longer(cols = c(P1, P2, P3), names_to = "Position", values_to = "Dollar_Delta") %>% 
@@ -289,7 +289,7 @@ up <-RTL::CRROption(S + step.size_q1_DG, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_
 }) * -2000 * mult
 )
 
-gamma_data <- gamma_data_p1 %>%
+gamma_plot <- gamma_data_p1 %>%
   left_join(gamma_data_p2, by = "Price") %>%
   left_join(gamma_data_p3, by = "Price") %>%
   pivot_longer(cols = c(P1, P2, P3), names_to = "Position", values_to = "Dollar_Gamma") %>% 
@@ -329,7 +329,7 @@ up <-RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = sigmap
 }) * -2000 * mult
 )
 
-vega_data <- vega_data_p1 %>%
+vega_plot <- vega_data_p1 %>%
   left_join(vega_data_p2, by = "Price") %>%
   left_join(vega_data_p3, by = "Price") %>%
   pivot_longer(cols = c(P1, P2, P3), names_to = "Position", values_to = "Dollar_Vega") %>% 
@@ -367,7 +367,7 @@ current <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, sigma = 
 }) * -2000 * mult
 )
 
-theta_data <- theta_data_p1 %>%
+theta_plot <- theta_data_p1 %>%
   left_join(theta_data_p2, by = "Price") %>%
   left_join(theta_data_p3, by = "Price") %>%
   pivot_longer(cols = c(P1, P2, P3), names_to = "Position", values_to = "Dollar_Theta") %>% 
@@ -377,9 +377,35 @@ theta_data <- theta_data_p1 %>%
 ```
 
 ```{r q1}
+# Question 4
+price_CRROption <- function (S, X, T2M, r, b, sigma, type, N, optionStyle) {
+  CRROption(S, X, T2M, r, b, sigma, N = N_q1, type, optionStyle = "american")$price
+}
 
+mtm_data <- dplyr::tibble(Price = f_range_q1) %>% 
+  dplyr::mutate(
+    P1 = purrr::map_dbl(Price, ~price_CRROption(.x, X = xp1_q1, T2M = t2mp1_q1, r = r, b = bp1_q1, sigma = sigmap1_q1, type = "put")) * 2000 * mult,
+    P2 = purrr::map_dbl(Price, ~price_CRROption(.x, X = xp2_q1, T2M = t2mp2_q1, r = r, b = bp2_q1, sigma = sigmap2_q1, type = "put")) * -2000 * mult,
+    P3 = purrr::map_dbl(Price, ~price_CRROption(.x, X = xp3_q1, T2M = t2mp3_q1, r = r, b = bp3_q1, sigma = sigmap3_q1, type = "call")) * -2000 * mult,
+    Portfolio = P1 + P2 + P3
+    )
 
+gamma_data <- gamma_data_p1 %>%
+  left_join(gamma_data_p2, by = "Price") %>%
+  left_join(gamma_data_p3, by = "Price") %>% 
+  mutate(Portfolio = P1 + P2 + P3)
 
+mtm_plot <- mtm_data %>%
+  ggplot(aes(x = Price, y = Portfolio)) +
+  geom_line() +
+  labs(x = "Futures Price ($/bbl)", y = "Portfolio MTM ($)", title = "Portfolio Mark-to-Market") +
+  theme_minimal()
+
+portfolio_gamma_plot <- gamma_data %>%
+  ggplot(aes(x = Price, y = Portfolio)) +
+  geom_line() +
+  labs(x = "Futures Price ($/bbl)", y = "Portfolio Dollar Gamma ($)", title = "Portfolio Gamma") +
+  theme_minimal()
 ```
 
 # Question 2 (3 points)
@@ -387,6 +413,16 @@ theta_data <- theta_data_p1 %>%
 Sum Greeks across positions to show **portfolio-level Greeks** at the current market. Present in a `gt::gt()` table. At approximately what futures price does the portfolio delta change sign?
 
 ```{r q2}
+
+
+
+
+
+
+
+
+
+
 
 ```
 
