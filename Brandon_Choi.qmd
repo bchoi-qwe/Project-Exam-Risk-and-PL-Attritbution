@@ -102,22 +102,40 @@ Create plots showing each Greek vs. futures price over F ∈ [50, 100], with one
 ```{r q1}
 S = F_0
 r = r
-step.size_q1 = 1 # Placeholder
 N_q1 = 1000 # Placeholder
 
 # Position P1
 xp1_q1 = 70.00
-t2mp1_q1 = 0.25
+t2mp1_q1 = 1 / 4
 bp1_q1 = 0
 sigmap1_q1 = 0.35
 
-# Position P1 Steps
-p1_q1.down <- RTL::CRROption(S - step.size_q1, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
-p1_q1.current <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
-p1_q1.up <-RTL::CRROption(S + step.size_q1, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+# Position P1 Delta / Gamma
+step.size_q1_DG = 1 # Placeholder
 
-delta.numerical <- (p1_q1.up - p1_q1.down) / 2 * step.size_q1
-delta.numerical
+p1_q1.downDG <- RTL::CRROption(S - step.size_q1_DG, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p1_q1.currentDG <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p1_q1.upDG <-RTL::CRROption(S + step.size_q1_DG, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+
+delta.numerical <- (p1_q1.upDG - p1_q1.downDG) / (2 * step.size_q1_DG)
+gamma.numerical <- (p1_q1.upDG - 2 * p1_q1.currentDG +  p1_q1.downDG) / (2 * step.size_q1_DG ^ 2)
+
+# Position P1 Vega
+step.size_q1_V = 0.01 # Placeholder
+
+p1_q1.downV <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1 - step.size_q1_V, N = N_q1, type = "put", optionStyle = "american")$price
+p1_q1.currentV <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p1_q1.upV <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1 + step.size_q1_V, N = N_q1, type = "put", optionStyle = "american")$price
+
+vega.numerical <- (p1_q1.upV - p1_q1.downV) / (2 * step.size_q1_V * 100)
+
+# Position P1 Theta
+step.size_q1_T = 1 / 365 # Placeholder
+
+p1_q1.downT <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1 - step.size_q1_T, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+p1_q1.currentT <- RTL::CRROption(S, X = xp1_q1, T2M = t2mp1_q1, r, b = bp1_q1, sigma = sigmap1_q1, N = N_q1, type = "put", optionStyle = "american")$price
+
+theta.numerical <- (p1_q1.downT - p1_q1.currentT)
 
 
 ```
