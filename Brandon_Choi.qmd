@@ -103,11 +103,11 @@ Create plots showing each Greek vs. futures price over F ∈ [50, 100], with one
 # Greeks
 S = F_0
 r = r
-N_q1 = 1000 # Placeholder
+N_q1 = 1000
 
-step.size_q1_DG = 0.25 # Placeholder
-step.size_q1_V = 0.01 # Placeholder
-step.size_q1_T = 1 / 365 # Placeholder
+step.size_q1_DG = 0.50
+step.size_q1_V = 0.01
+step.size_q1_T = 1 / 365
 
 # Position P1
 xp1_q1 = 70.00
@@ -191,7 +191,7 @@ p3_q1.currentT <- RTL::CRROption(S, X = xp3_q1, T2M = t2mp3_q1, r, b = bp3_q1, s
 theta.numericalp3_q1 <- (p3_q1.downT - p3_q1.currentT)
 
 greeks_table <- dplyr::tribble(
-  ~Position, ~P1, ~P2, ~P3,
+  ~Greeks, ~P1, ~P2, ~P3,
   "Delta", delta.numericalp2_q1, delta.numericalp2_q1, delta.numericalp3_q1,
   "Gamma", gamma.numericalp2_q1, gamma.numericalp2_q1, gamma.numericalp3_q1,
   "Vega", vega.numericalp2_q1, vega.numericalp2_q1, vega.numericalp3_q1,
@@ -200,15 +200,14 @@ greeks_table <- dplyr::tribble(
   gt::gt() %>% 
   gt::tab_header(
     title    = "Greeks",
-    subtitle = "",
-    gt::fmt_number(columns = c(P1, P2, P3), decimals = 2)
-  )
+    subtitle = "") %>% 
+    gt::fmt_number(columns = c(Greeks, P1, P2, P3), decimals = 2)
 ```
 
 # Step Size Selection
-For Delta, I chose 0.25 as the step size. While the minimum price fluctuation / barrel was listed at 0.01 on the CME, I believed that this would be too small of a step size. While the WTI contract on the CME (open - close) / 2 of ~ $0.75, I believed that with the shorter expiry, a smaller denomination would work best.
+For Delta, I chose 0.5 as the step size. While the minimum price fluctuation / barrel was listed at 0.01 on the CME, I believed that this would be too small of a step size. While the WTI contract on the CME (open - close) / 2 of ~ $0.75, I believed that with the shorter expiry, a smaller denomination would work best.
 
-For Gamma, I also chose 0.25 as the step rate for the same reasons. Both of these greeks are related to the price of the contract. Since shorter step sizes can more accurately model lower T2M's, this works well for our contracts.
+For Gamma, I also chose 0.5 as the step rate for the same reasons. Both of these greeks are related to the price of the contract. Since shorter step sizes can more accurately model lower T2M's, this works well for our contracts.
 
 For Vega, I chose 0.01 as the step size as that would be the smallest measure of change in implied volatility.
 
@@ -238,7 +237,7 @@ dollar_vega_total_q1 <- dollar_vegap1_q1 + dollar_vegap2_q1 + dollar_vegap3_q1
 dollar_theta_total_q1 <- dollar_thetap1_q1 + dollar_thetap2_q1 + dollar_thetap3_q1
 
 dollar_greeks_table <- dplyr::tribble(
-  ~Position, ~P1, ~P2, ~P3,
+  ~Greeks, ~P1, ~P2, ~P3,
   "Delta", dollar_deltap1_q1, dollar_deltap2_q1, dollar_deltap3_q1,
   "Gamma", dollar_gammap1_q1, dollar_gammap2_q1, dollar_gammap3_q1,
   "Vega", dollar_vegap1_q1, dollar_vegap2_q1, dollar_vegap3_q1,
@@ -247,13 +246,12 @@ dollar_greeks_table <- dplyr::tribble(
   gt::gt() %>% 
   gt::tab_header(
     title    = "Dollar Scaled Greeks",
-    subtitle = "$ Pnl / $1/bbl movement",
-    gt::fmt_number(columns = c(P1, P2, P3), decimals = 2)
-  )
+    subtitle = "$ Pnl / $1/bbl movement") %>% 
+    gt::fmt_number(columns = c(Greeks, P1, P2, P3), decimals = 2)
 ```
 
 ```{r q1}
-f_range_q1 <- seq(50, 100, 0.25)
+f_range_q1 <- seq(50, 100, 0.5)
 
 ### Delta Data
 delta_data_p1 <- tibble(Price = f_range_q1) %>% 
@@ -450,16 +448,34 @@ portfolio_gamma_plot <- gamma_data %>%
 mtm_plot
 portfolio_gamma_plot
 ```
+The MTM portfolio consists of a long 70 dollar put, a short 55 dollar put, and a short 80 dollar call. Above 80 dollars, the portfolio loses money due to 80 dollar call. The closer WTI's price gets to $70, the more the value of this portfolio increases due to the long 70 dollar call. This provides downside protection. Overall, this portfolio provides a balance of downside protection, at the expense of capped earnings.
 
-For the analysis of Gamma for our portfolio, the highest dollar scaled region is ~ 68 Dollars and the lowest dollar scaled region is ~ 78 Dollars. This is because of our long put position near the $70 mark, and our short call position near the 80 Dollar mark. With our additional short put position at 55 Dollars, these peaks are shifted slightly to the left. Gamma is closest to zero near 100 Dollars as that would be the furthest distance away from these options positions.
 
+For the analysis of Gamma for our portfolio, the highest dollar scaled Gamma region is ~ 68 Dollars and the lowest dollar scaled Gamma region is ~ 78 Dollars. This is because of our long put position near the $70 mark, and our short call position near the 80 Dollar mark. With our additional short put position at 55 Dollars, these peaks are shifted slightly to the left. Gamma is closest to zero near 100 Dollars as that would be the furthest distance away from these options positions.
 
 # Question 2 (3 points)
 
 Sum Greeks across positions to show **portfolio-level Greeks** at the current market. Present in a `gt::gt()` table. At approximately what futures price does the portfolio delta change sign?
 
 ```{r q2}
+portfolio_greeks_table <- dplyr::tibble(
+  Greeks = c("Delta", "Gamma", "Vega", "Theta"),
+  Portfolio =c(dollar_delta_total_q1, dollar_gamma_total_q1, dollar_gamma_total_q1, dollar_vega_total_q1)
+) %>% 
+  gt::gt() %>% 
+  gt::tab_header(
+    title    = "Portfolio Level Greeks",
+    subtitle = "Dollar Scaled") %>% 
+    gt::fmt_number(columns = c("Greeks", "Portfolio"), decimals = 2)
 
+delta_data <- delta_data_p1 %>%
+  left_join(delta_data_p2, by = "Price") %>%
+  left_join(delta_data_p3, by = "Price") %>% 
+  mutate(Portfolio = P1 + P2 + P3)
+
+delta_positive <- delta_data %>% 
+  filter(Portfolio > 0)
+  
 
 
 
